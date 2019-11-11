@@ -1,0 +1,22 @@
+{
+  "name": "iselect-coding-challenge-robot",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --coverage --runInBand"
+  },
+  "keywords": [],
+  "author": "Hadi Badjian",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "jest": "^24.9.0",
+    "jest-environment-node": "^24.9.0",
+    "sleep-promise": "^8.0.1"
+  },
+  "jest": {
+    "verbose": true,
+    "restoreMocks": true
+  }
+}
