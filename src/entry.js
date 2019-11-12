@@ -1,57 +1,45 @@
-const fs = require('fs');
 const botCar = require('./car');
+const placeCommand = require('./commands/place-command');
+const rightCommand = require('./commands/right-command');
+const leftCommand = require('./commands/left-command');
+const moveCommand = require('./commands/move-command');
+const reportCommand = require('./commands/report-command');
 
 class Entry {
-	constructor(inputFilePath) {
-		this.inputContent = fs.readFileSync(inputFilePath, 'utf8');
+	constructor(inputAdapter) {
+		this.inputAdapter = inputAdapter;
 		this.car = new botCar(5);
 	}
 
-	commands() {
-		return this.inputContent.trim().split('\n').map(command => this._parse(command));
-	}
-
 	run() {
-		let report = null;
-		this.commands().forEach(item => {
-			switch (item.command) {
-				case 'PLACE':
-					this.car.place(...item.args);
-					return;
-				case 'MOVE':
-					this.car.move();
-					return;
-				case 'LEFT':
-					this.car.left();
-					return;
-				case 'RIGHT':
-					this.car.right();
-					return;
-				case 'REPORT':
-					report = this.car.report();
-					return;
-			}
-		});
-		return report;
+		return this._commands()
+			.map(item => item.run())
+			.filter(result => result);
 	}
 
 	// Private Methods
 
-	_parse(rawCommand) {
-		let found = rawCommand.match(/PLACE\s*(\d)\s*,\s*(\d)\s*,\s*(NORTH|SOUTH|EAST|WEST)/);
+	_commands() {
+		return this.inputAdapter
+			.commands()
+			.map(command => this._parse(command));
+	}
+
+	_parse(command) {
+		let found = command.match(/PLACE\s*(\d)\s*,\s*(\d)\s*,\s*(NORTH|SOUTH|EAST|WEST)/);
 		if (found) {
-			return {command: 'PLACE', args: [+found[1], +found[2], found[3]]}
+			return new placeCommand(this.car, [+found[1], +found[2], found[3]]);
 		}
 
-		switch (rawCommand) {
+		switch (command) {
 			case 'MOVE':
-				return {command: 'MOVE', args: []};
+				return new moveCommand(this.car, []);
 			case 'LEFT':
-				return {command: 'LEFT', args: []};
+				return new leftCommand(this.car, []);
 			case 'RIGHT':
-				return {command: 'RIGHT', args: []};
+				return new rightCommand(this.car, []);
 			case 'REPORT':
-				return {command: 'REPORT', args: []};
+				return new reportCommand(this.car, []);
 		}
 	}
 }
