@@ -1,4 +1,4 @@
-# NodeBot
+# NodoBot
 
 ## Environment
 Node v10.16.3
